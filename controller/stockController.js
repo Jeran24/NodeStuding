@@ -1,10 +1,9 @@
-import { getUserRole, addItem, getAllItems, getItemById, setQuantity, deleteItemById } from '../module/stock.js';
+import { addItem, getAllItems, getItemById, setQuantity, deleteItemById } from '../module/stock.js';
 
 export async function addStock(req, res) {
-    const { user_id, name, quantity } = req.body;
+    const { name, quantity } = req.body;
 
-    const role = await getUserRole(user_id);
-    if (role !== 'adder') {
+    if (req.role !== 'adder') {
         return res.status(403).json({ message: "Only an adder can add items" });
     }
 
@@ -19,10 +18,9 @@ export async function getStock(req, res) {
 
 export async function removeStock(req, res) {
     const { id } = req.params;
-    const { user_id, amount } = req.body;
+    const { amount } = req.body;
 
-    const role = await getUserRole(user_id);
-    if (role !== 'remover') {
+    if (req.role !== 'remover') {
         return res.status(403).json({ message: "Only a remover can remove items" });
     }
 
@@ -43,12 +41,12 @@ export async function removeStock(req, res) {
     await setQuantity(id, newQuantity, status);
     res.json({ message: "Item removed", quantity: newQuantity, status });
 }
+
 export async function addQuantity(req, res) {
     const { id } = req.params;
-    const { user_id, amount } = req.body;
+    const { amount } = req.body;
 
-    const role = await getUserRole(user_id);
-    if (role !== 'adder') {
+    if (req.role !== 'adder') {
         return res.status(403).json({ message: "Only an adder can add items" });
     }
 
@@ -62,12 +60,11 @@ export async function addQuantity(req, res) {
     await setQuantity(id, newQuantity, 'in stock');
     res.json({ message: "Quantity added", quantity: newQuantity, status: 'in stock' });
 }
+
 export async function deleteStock(req, res) {
     const { id } = req.params;
-    const { user_id } = req.body;
 
-    const role = await getUserRole(user_id);
-    if (role !== 'remover') {
+    if (req.role !== 'remover') {
         return res.status(403).json({ message: "Only a remover can delete items" });
     }
 
